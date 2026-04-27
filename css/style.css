@@ -304,7 +304,8 @@ body {
 
 .chat-page {
   display: flex;
-  height: 100vh;
+  height: 100vh;          /* fallback navegadores viejos */
+  height: 100dvh;         /* dvh = dynamic viewport height, descuenta barra del navegador */
   overflow: hidden;
   background: var(--bg);
 }
@@ -572,6 +573,8 @@ body {
 /* Input de mensaje */
 .chat-input-area {
   padding: 1rem 1.5rem;
+  /* env(safe-area-inset-bottom) agrega espacio extra en iPhone con home bar */
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
   background: var(--surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -1284,4 +1287,61 @@ tbody tr.selected td { background: rgba(77,184,138,0.06); }
   font-size: 0.75rem;
   color: rgba(160,190,255,0.6);
   white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE MÓVIL
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+
+  /* El sidebar se oculta — toda la pantalla es el chat */
+  .chat-sidebar {
+    display: none;
+  }
+
+  /* El chat ocupa el 100% */
+  .chat-main {
+    width: 100%;
+  }
+
+  /* Header más compacto */
+  .chat-header {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Mensajes con menos padding lateral */
+  .chat-messages {
+    padding: 1rem;
+  }
+
+  /* Burbujas más anchas en móvil */
+  .message-wrapper {
+    max-width: 92%;
+  }
+
+  /* Input area */
+  .chat-input-area {
+    padding: 0.75rem 1rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  /* Textarea un poco más grande para dedos */
+  #message-input {
+    font-size: 1rem;    /* evita zoom automático en iOS al hacer foco */
+    min-height: 44px;
+  }
+
+  /* Overlays de respiración y mindfulness — ocupan toda la pantalla */
+  #breathing-overlay,
+  #mindfulness-overlay {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Safari iOS: forzar que el body no haga scroll cuando el teclado aparece */
+@supports (-webkit-touch-callout: none) {
+  .chat-page {
+    height: -webkit-fill-available;
+  }
 }
