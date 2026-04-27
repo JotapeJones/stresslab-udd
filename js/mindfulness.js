@@ -362,8 +362,7 @@ let activeMindfulnessSession = null;
 // El evento 'session_started' lo dispara db.js cuando Claude emite
 // el bloque [DATA:{"type":"session_start","technique":"mindfulness"}]
 
-window.addEventListener('session_started', (e) => {
-  if (e.detail.technique !== 'mindfulness') return;
+window.addEventListener('mindfulness_ready', (e) => {
 
   // Las voces pueden no estar cargadas aún en algunos navegadores
   const launchSession = () => {
