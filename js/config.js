@@ -54,7 +54,7 @@ const CONFIG = {
   RESEARCHER_PASSWORD: 'UDD2026stresslab',
 
   // ─── CÓDIGOS DE PARTICIPANTES ────────────────────────────────────
-  VALID_CODES: ['TM-001', 'TM-002', 'TM-003', 'TM-004', 'TM-005', 'TM-006'],
+  VALID_CODES: ['TM-001', 'TM-002', 'TM-003', 'TM-004', 'TM-005', 'TM-006''TM-011', 'TM-012', 'TM-013', 'TM-014', 'TM-015', 'TM-016'],
 
   // ─── INFORMACIÓN DEL ESTUDIO ─────────────────────────────────────
   STUDY: {
