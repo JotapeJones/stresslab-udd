@@ -166,8 +166,8 @@ function stopBreathingAnimation() {
 }
 
 // Escuchar el evento de inicio de sesión de respiración
-window.addEventListener('session_started', (e) => {
-  if (e.detail.technique === 'respiracion') {
+window.addEventListener('breathing_ready', (e) => {
+  {
     // Esperar 3 segundos para que Claude termine de dar instrucciones
     setTimeout(() => {
       startBreathingAnimation((completed) => {
