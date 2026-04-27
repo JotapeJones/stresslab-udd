@@ -212,10 +212,12 @@ async function callClaude(participant, userMessage) {
 
   let rawContent = '';
 
-  if (CONFIG.AI_PROVIDER === 'gemini') {
-    rawContent = await _callGemini(systemPrompt, history);
-  } else {
+  if (CONFIG.AI_PROVIDER === 'groq') {
+    rawContent = await _callGroq(systemPrompt, history);
+  } else if (CONFIG.AI_PROVIDER === 'anthropic') {
     rawContent = await _callAnthropic(systemPrompt, history);
+  } else {
+    throw new Error('AI_PROVIDER no reconocido en config.js. Usa "groq" o "anthropic".');
   }
 
   // Procesar bloques DATA y obtener mensaje limpio
@@ -230,80 +232,49 @@ async function callClaude(participant, userMessage) {
   return cleanContent;
 }
 
-// ─── Gemini (Google AI Studio — gratis) ──────────────────────────
-// Prueba automáticamente varios modelos en orden hasta que uno funcione.
-// Esto resuelve el problema de cuota o modelo no disponible por región.
+// ─── Groq (gratis, funciona en Chile, sin tarjeta) ──────────────
+// Usa la API compatible con OpenAI. Modelo: llama-3.3-70b-versatile
+// Límite gratuito: 14.400 requests/día — más que suficiente para el estudio.
 
-async function _callGemini(systemPrompt, history) {
-  const contents = history.map(msg => ({
-    role: msg.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: msg.content }]
-  }));
+async function _callGroq(systemPrompt, history) {
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.map(msg => ({ role: msg.role, content: msg.content }))
+  ];
 
   const requestBody = {
-    system_instruction: { parts: [{ text: systemPrompt }] },
-    contents,
-    generationConfig: {
-      maxOutputTokens: CONFIG.MAX_TOKENS,
-      temperature: 0.75,
-    }
+    model:       CONFIG.GROQ_MODEL || 'llama-3.3-70b-versatile',
+    messages,
+    max_tokens:  CONFIG.MAX_TOKENS,
+    temperature: 0.75,
   };
 
-  const models = CONFIG.GEMINI_MODELS || ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
-  let lastError = null;
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`
+    },
+    body: JSON.stringify(requestBody)
+  });
 
-  for (const model of models) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-
-      // Modelo no existe en esta cuenta/región → probar el siguiente
-      if (response.status === 404) {
-        lastError = new Error(`Modelo ${model} no disponible (404)`);
-        continue;
-      }
-
-      // Cuota agotada → probar el siguiente
-      if (response.status === 429) {
-        const err = await response.json().catch(() => ({}));
-        lastError = new Error(`Cuota agotada para ${model}: ${err.error?.message || ''}`);
-        continue;
-      }
-
-      // Error de clave incorrecta → no tiene sentido probar más modelos
-      if (response.status === 400 || response.status === 401 || response.status === 403) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(`Error de autenticación Gemini (${response.status}): ${err.error?.message || 'Verifica tu GEMINI_API_KEY en config.js'}`);
-      }
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(`Gemini API ${response.status}: ${err.error?.message || 'Error desconocido'}`);
-      }
-
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    } catch (e) {
-      // Si el error lo lanzamos nosotros (auth, etc), propagar
-      if (e.message.includes('autenticación') || e.message.includes('Verifica')) throw e;
-      lastError = e;
-      continue;
-    }
+  if (response.status === 401) {
+    throw new Error('Clave de Groq incorrecta (401). Verifica GROQ_API_KEY en config.js — debe venir de console.groq.com y empezar con gsk_');
   }
 
-  // Ningún modelo funcionó
-  throw new Error(
-    'No se pudo conectar con Gemini. ' +
-    (lastError?.message || '') +
-    ' — Verifica tu GEMINI_API_KEY en config.js (debe venir de aistudio.google.com).'
-  );
+  if (response.status === 429) {
+    throw new Error('Límite de requests de Groq alcanzado (429). Espera unos minutos e intenta nuevamente.');
+  }
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(`Groq API ${response.status}: ${err.error?.message || 'Error desconocido'}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
 }
+
 
 // ─── Anthropic Claude (para el estudio real) ─────────────────────
 
