@@ -32,13 +32,13 @@ const CONFIG = {
   // Dónde obtenerla: console.firebase.google.com → Configuración → Tus apps → </>
   // OJO: el apiKey de Firebase también empieza con AIzaSy, pero es DISTINTO al de Gemini
   FIREBASE: {
-    apiKey:            'FIREBASE_API_KEY',
-    authDomain:        'TU_PROYECTO.firebaseapp.com',
-    databaseURL:       'https://TU_PROYECTO-default-rtdb.firebaseio.com',
-    projectId:         'TU_PROYECTO',
-    storageBucket:     'TU_PROYECTO.appspot.com',
-    messagingSenderId: 'SENDER_ID',
-    appId:             'APP_ID'
+    apiKey:            'AIzaSyBO95v1VaccJB5MvdIMsPQ0CkklEsGC89U',
+    authDomain:        'streab-udd.firebaseapp.com',
+    databaseURL:       'https://streab-udd-default-rtdb.firebaseio.com',
+    projectId:         'streab-udd',
+    storageBucket:     'streab-udd.firebasestorage.app',
+    messagingSenderId: '520031580990',
+    appId:             '1:520031580990:web:354fa36be9caf39c62326f'
   },
 
   // ─── EMAILJS (se configura después, no es urgente) ───────────────
@@ -54,14 +54,14 @@ const CONFIG = {
   RESEARCHER_PASSWORD: 'UDD2026stresslab',
 
   // ─── CÓDIGOS DE PARTICIPANTES ────────────────────────────────────
-  VALID_CODES: ['TM-001', 'TM-002', 'TM-003', 'TM-004', 'TM-005', 'TM-006''TM-011', 'TM-012', 'TM-013', 'TM-014', 'TM-015', 'TM-016'],
+  VALID_CODES: ['TM-001', 'TM-002', 'TM-003', 'TM-004', 'TM-005', 'TM-006', 'TM-011', 'TM-012', 'TM-013', 'TM-014', 'TM-015', 'TM-016'],
 
   // ─── INFORMACIÓN DEL ESTUDIO ─────────────────────────────────────
   STUDY: {
     name:               'Estudio Cortisol Salival UDD 2026',
     institution:        'Universidad del Desarrollo, Santiago',
     researchers:        'Florencia Arrieta · Javiera Díaz',
-    guide:              'T.M. Juan Pablo Alcaya',
+    guide:              'T.M. Juan Pablo Alcayaga',
     mentalHealthEmail:  'psicologia@udd.cl',
     mentalHealthPhone:  '600 600 6222 (interno 2500)',
     researcherEmail:    'florencia.arrieta@udd.cl',
