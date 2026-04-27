@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StressLab UDD — Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="chat-page">
+
+  <!-- ════════════════════════════════════════════
+       PANTALLA DE CARGA INICIAL
+       ════════════════════════════════════════════ -->
+  <div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <p>Cargando tu espacio de bienestar…</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       OVERLAY DE RESPIRACIÓN
+       ════════════════════════════════════════════ -->
+  <div id="breathing-overlay">
+    <p class="breath-title">Respiración consciente</p>
+    <div id="breath-sphere"></div>
+    <div id="breath-phase-label">Inhala</div>
+    <div id="breath-timer-label">5</div>
+    <div class="breath-progress-track">
+      <div id="breath-progress-fill"></div>
+    </div>
+    <div id="breath-cycle-label">Ciclo 1 de 60</div>
+    <button id="breath-exit-btn">Detener sesión</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       OVERLAY DE MINDFULNESS
+       ════════════════════════════════════════════ -->
+  <div id="mindfulness-overlay">
+    <p class="mindful-title">Meditación guiada</p>
+
+    <div class="mindful-orb-container">
+      <div class="mindful-orb-ring"></div>
+      <div class="mindful-orb-ring"></div>
+      <div class="mindful-orb-ring"></div>
+      <div class="mindful-orb-core"></div>
+    </div>
+
+    <div id="mindful-instruction">Prepárate para comenzar…</div>
+    <div id="mindful-phase-label">Cargando sesión</div>
+
+    <div class="mindful-progress-track">
+      <div id="mindful-progress-fill"></div>
+    </div>
+
+    <div class="mindful-controls">
+      <button id="mindful-pause-btn">Pausar</button>
+      <button id="mindful-exit-btn">Detener sesión</button>
+    </div>
+
+    <div id="mindful-voice-warning"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SIDEBAR
+       ════════════════════════════════════════════ -->
+  <aside class="chat-sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-badge">🧬</div>
+      <div class="logo-text">
+        StressLab UDD
+        <small>Tecnología Médica 2026</small>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Participante</div>
+      <div class="sidebar-value big" id="sidebar-nickname">—</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Código</div>
+      <div class="sidebar-value" id="sidebar-code">—</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Estado</div>
+      <div class="sidebar-value" id="sidebar-state">
+        <span class="state-badge">cargando…</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Sesiones realizadas</div>
+      <div class="sidebar-value" id="sidebar-sessions">—</div>
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-footer">
+      <div style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 0.75rem; line-height: 1.6;">
+        ¿Necesitas apoyo psicológico?<br />
+        <strong style="color: var(--text-muted);">UDD Bienestar:</strong>
+        <a href="tel:+56600600622" style="color: var(--primary); text-decoration: none;">600 600 6222</a>
+        <span style="color: var(--text-light)"> int. 2500</span>
+      </div>
+      <button class="btn-exit" onclick="window.location.href='index.html'">
+        ← Salir
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════════
+       ÁREA PRINCIPAL DE CHAT
+       ════════════════════════════════════════════ -->
+  <main class="chat-main">
+
+    <!-- Header -->
+    <header class="chat-header">
+      <div class="avatar">🤖</div>
+      <div class="header-info">
+        <h3>Asistente StressLab</h3>
+        <p>Tu guía de bienestar académico</p>
+      </div>
+      <div class="header-status">
+        <div class="status-dot"></div>
+        <span>En línea</span>
+      </div>
+    </header>
+
+    <!-- Mensajes -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Los mensajes se insertan aquí dinámicamente -->
+    </div>
+
+    <!-- Indicador de escritura -->
+    <div class="typing-indicator" id="typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
+
+    <!-- Error -->
+    <div id="chat-error" style="
+      display: none;
+      padding: 0.75rem 1.5rem;
+      background: #FEF2F2;
+      color: #DC2626;
+      font-size: 0.85rem;
+      border-top: 1px solid #FECACA;
+      flex-shrink: 0;
+    "></div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+      <div class="input-row">
+        <textarea
+          id="message-input"
+          placeholder="Escribe tu mensaje…"
+          rows="1"
+          autocomplete="off"
+          spellcheck="true"
+        ></textarea>
+        <button id="send-btn" title="Enviar mensaje">
+          ➤
+        </button>
+      </div>
+      <div class="breathing-done-hint" id="breathing-done-hint">
+        ✅ Sesión de respiración completada. Escribe algo para continuar.
+      </div>
+      <div class="breathing-done-hint" id="mindfulness-done-hint" style="background: rgba(80,130,230,0.08); color: #4A6FA5;">
+        🧘 Sesión de mindfulness completada. Escribe algo para continuar.
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ════════════════════════════════════════════
+       SCRIPTS (orden: config → firebase → db → email → breathing → chat)
+       ════════════════════════════════════════════ -->
+  <!-- Firebase SDK (compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- App -->
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/breathing.js"></script>
+  <script src="js/mindfulness.js"></script>
+  <script src="js/chat.js"></script>
+
+  <!-- Auto-resize textarea -->
+  <script>
+    const ta = document.getElementById('message-input');
+    ta.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StressLab UDD — Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="entry-page">
+
+  <div class="entry-wrapper">
+
+    <!-- ── Tarjeta de acceso ── -->
+    <div class="entry-card">
+
+      <div class="logo-area">
+        <div class="logo-icon">🧬</div>
+        <h1>StressLab UDD</h1>
+        <p class="subtitle">Estudio de Estrés Académico · Tecnología Médica</p>
+      </div>
+
+      <!-- Sección participante (visible por defecto) -->
+      <div class="form-section active" id="section-participant">
+        <h2>Acceso de participante</h2>
+        <p>Ingresa el código que te entregó el equipo investigador.</p>
+
+        <div class="input-group">
+          <label for="participant-code">Código de participante</label>
+          <input
+            type="text"
+            id="participant-code"
+            placeholder="Ej: TM-001"
+            maxlength="10"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <button class="btn-primary" id="btn-participant">
+          Ingresar al estudio →
+        </button>
+
+        <div class="divider"><span>o</span></div>
+
+        <button class="btn-link" id="btn-show-researcher">
+          🔒 Acceso investigadores
+        </button>
+      </div>
+
+      <!-- Sección investigador (oculta por defecto) -->
+      <div class="form-section" id="section-researcher">
+        <h2>Panel de investigadores</h2>
+        <p>Acceso restringido al equipo del estudio.</p>
+
+        <div class="input-group">
+          <label for="researcher-password">Contraseña</label>
+          <input
+            type="password"
+            id="researcher-password"
+            placeholder="Contraseña de acceso"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button class="btn-primary" id="btn-researcher">
+          Acceder al panel →
+        </button>
+
+        <button class="btn-link" id="btn-back">
+          ← Volver al acceso de participante
+        </button>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="error-message" id="error-msg"></div>
+
+    </div>
+
+    <!-- ── Panel informativo del estudio ── -->
+    <div class="entry-info-panel">
+      <h2>Bienestar en época de certámenes</h2>
+      <p class="tagline">
+        Un acompañamiento basado en evidencia para reducir el estrés académico
+        y medir su impacto en el cortisol salival.
+      </p>
+
+      <ul class="feature-list">
+        <li>
+          <span class="icon">🌬️</span>
+          <span><strong>Respiración lenta</strong> — Activa el nervio vago y reduce la respuesta HPA al estrés.</span>
+        </li>
+        <li>
+          <span class="icon">🧘</span>
+          <span><strong>Mindfulness</strong> — Fortalece la regulación emocional vía corteza prefrontal dorsolateral.</span>
+        </li>
+        <li>
+          <span class="icon">🏃</span>
+          <span><strong>Actividad física moderada</strong> — Promueve adaptación cruzada y libera BDNF neuroprotector.</span>
+        </li>
+        <li>
+          <span class="icon">📊</span>
+          <span><strong>Seguimiento personalizado</strong> — Check-ins de bienestar antes y después de cada sesión.</span>
+        </li>
+        <li>
+          <span class="icon">📧</span>
+          <span><strong>Recordatorios por correo</strong> — Para que no pierdas ninguna sesión programada.</span>
+        </li>
+      </ul>
+
+      <div class="study-meta">
+        <strong>Tesis de Pregrado — Tecnología Médica UDD 2026</strong><br />
+        Florencia Arrieta · Javiera Díaz<br />
+        Profesor guía: T.M. Juan Pablo Alcaya<br />
+        Escuela de Tecnología Médica · Universidad del Desarrollo
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       Lógica de la página de entrada
+       ════════════════════════════════════════════ -->
+  <script src="js/config.js"></script>
+  <script>
+    // ─── Referencias DOM ────────────────────────────────────────────
+    const sectionParticipant  = document.getElementById('section-participant');
+    const sectionResearcher   = document.getElementById('section-researcher');
+    const inputCode           = document.getElementById('participant-code');
+    const inputPassword       = document.getElementById('researcher-password');
+    const btnParticipant      = document.getElementById('btn-participant');
+    const btnResearcher       = document.getElementById('btn-researcher');
+    const btnShowResearcher   = document.getElementById('btn-show-researcher');
+    const btnBack             = document.getElementById('btn-back');
+    const errorMsg            = document.getElementById('error-msg');
+
+    // ─── Helpers ────────────────────────────────────────────────────
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function clearError() {
+      errorMsg.classList.remove('visible');
+      errorMsg.textContent = '';
+    }
+
+    function showSection(name) {
+      clearError();
+      if (name === 'participant') {
+        sectionParticipant.classList.add('active');
+        sectionResearcher.classList.remove('active');
+        inputCode.focus();
+      } else {
+        sectionResearcher.classList.add('active');
+        sectionParticipant.classList.remove('active');
+        inputPassword.focus();
+      }
+    }
+
+    // ─── Leer parámetros de URL ──────────────────────────────────────
+    (function handleURLParams() {
+      const params = new URLSearchParams(window.location.search);
+      const mode   = params.get('mode');
+      const error  = params.get('error');
+
+      if (mode === 'researcher') showSection('researcher');
+
+      if (error === 'codigo_invalido') {
+        showSection('participant');
+        showError('Código inválido. Verifica e intenta nuevamente.');
+      } else if (error === 'sin_codigo') {
+        showSection('participant');
+        showError('Ingresa tu código de participante para continuar.');
+      }
+    })();
+
+    // ─── Acceso participante ────────────────────────────────────────
+    function handleParticipantAccess() {
+      clearError();
+      const code = inputCode.value.trim().toUpperCase();
+
+      if (!code) {
+        showError('Por favor ingresa tu código de participante.');
+        inputCode.focus();
+        return;
+      }
+
+      if (!CONFIG.VALID_CODES.includes(code)) {
+        showError('Código no reconocido. Verifica que lo estás ingresando correctamente (ej: TM-001).');
+        inputCode.select();
+        return;
+      }
+
+      // Código válido → redirigir al chat
+      window.location.href = `chat.html?code=${encodeURIComponent(code)}`;
+    }
+
+    // ─── Acceso investigador ────────────────────────────────────────
+    function handleResearcherAccess() {
+      clearError();
+      const password = inputPassword.value;
+
+      if (!password) {
+        showError('Ingresa la contraseña de acceso.');
+        inputPassword.focus();
+        return;
+      }
+
+      if (password !== CONFIG.RESEARCHER_PASSWORD) {
+        showError('Contraseña incorrecta.');
+        inputPassword.select();
+        return;
+      }
+
+      // Autenticado → guardar en sessionStorage y redirigir
+      sessionStorage.setItem('researcher_authed', '1');
+      window.location.href = 'dashboard.html';
+    }
+
+    // ─── Eventos ─────────────────────────────────────────────────────
+    btnParticipant.addEventListener('click', handleParticipantAccess);
+    btnResearcher.addEventListener('click', handleResearcherAccess);
+    btnShowResearcher.addEventListener('click', () => showSection('researcher'));
+    btnBack.addEventListener('click', () => showSection('participant'));
+
+    // Enter en inputs
+    inputCode.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleParticipantAccess();
+    });
+    inputPassword.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleResearcherAccess();
+    });
+
+    // Limpiar error al escribir
+    inputCode.addEventListener('input', clearError);
+    inputPassword.addEventListener('input', clearError);
+
+    // Foco inicial
+    inputCode.focus();
+  </script>
+
+</body>
+</html>

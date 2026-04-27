@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StressLab UDD — Panel del Investigador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="dash-page">
+
+  <!-- ════════════════════════════════════════════
+       PANTALLA DE CARGA
+       ════════════════════════════════════════════ -->
+  <div id="dash-loading" style="
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 999; gap: 1rem;
+  ">
+    <div class="loading-spinner"></div>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Cargando datos del estudio…</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       HEADER
+       ════════════════════════════════════════════ -->
+  <header class="dash-header">
+    <div class="logo-badge" style="
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; color: white; flex-shrink: 0;
+    ">🧬</div>
+    <h1>StressLab UDD — Panel Investigador</h1>
+    <div class="spacer"></div>
+    <div class="dash-header-actions">
+      <button class="btn-dash secondary" id="btn-export-csv" title="Exportar datos de participantes">
+        ↓ Exportar participantes
+      </button>
+      <button class="btn-dash secondary" id="btn-export-sessions" title="Exportar sesiones">
+        ↓ Exportar sesiones
+      </button>
+      <button class="btn-dash primary" id="btn-send-summaries" title="Enviar resúmenes semanales por correo">
+        ✉ Resúmenes semanales
+      </button>
+      <button class="btn-dash secondary" id="btn-refresh" title="Recargar datos">
+        ↻ Actualizar
+      </button>
+      <button class="btn-dash danger" id="btn-logout">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+       ════════════════════════════════════════════ -->
+  <div class="dash-content">
+
+    <!-- Error global -->
+    <div id="dash-error" style="
+      display: none;
+      margin-bottom: 1.5rem;
+      padding: 1rem 1.5rem;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: var(--radius);
+      color: #DC2626;
+      font-size: 0.875rem;
+    "></div>
+
+    <!-- ── Tarjetas resumen ── -->
+    <div class="overview-cards">
+
+      <div class="ov-card">
+        <div class="ov-label">Participantes activos</div>
+        <div class="ov-value" id="card-active">—</div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-label">Intervenciones cerradas</div>
+        <div class="ov-value" id="card-closed">—</div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-label">Sesiones realizadas</div>
+        <div class="ov-value" id="card-sessions">—</div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-label">Adherencia global</div>
+        <div class="ov-value" id="card-adherence">—</div>
+      </div>
+
+    </div>
+
+    <!-- ── Tabla de participantes ── -->
+    <div class="table-section">
+      <div class="table-section-header">
+        <h2>Participantes</h2>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Haz clic en "Ver" para explorar los datos individuales</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Apodo</th>
+              <th>Estado</th>
+              <th>Técnica(s)</th>
+              <th>Sesiones/semana</th>
+              <th>Semanas</th>
+              <th>Sesiones completadas</th>
+              <th>Adherencia</th>
+              <th>Inicio onboarding</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="participants-tbody">
+            <tr>
+              <td colspan="10" style="text-align:center; color: var(--text-muted); padding: 2rem;">
+                Cargando participantes…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Detalle del participante ── -->
+    <div id="participant-detail">
+      <!-- Se rellena dinámicamente por dashboard.js -->
+
+      <div class="detail-header" style="
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-2);
+      ">
+        <h2 id="detail-title" style="
+          font-family: var(--font-serif);
+          font-size: 1rem;
+          color: var(--text);
+          font-weight: 600;
+        ">Detalle del participante</h2>
+      </div>
+
+      <div style="padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+        <!-- Info + gráfico bienestar -->
+        <div>
+          <div id="detail-info" style="margin-bottom: 1.5rem;"></div>
+          <div style="
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+          ">Evolución del bienestar (pre vs post sesión)</div>
+          <canvas id="bienestar-chart" height="200"></canvas>
+        </div>
+
+        <!-- Cuestionario de cierre -->
+        <div>
+          <div style="
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+          ">Cuestionario de cierre</div>
+          <div id="closing-data"></div>
+        </div>
+
+      </div>
+
+      <!-- Tabla de sesiones individuales -->
+      <div style="border-top: 1px solid var(--border); padding: 1.5rem;">
+        <div style="
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.07em;
+          color: var(--text-muted);
+          margin-bottom: 0.75rem;
+        ">Historial de sesiones</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Técnica</th>
+                <th>Estado</th>
+                <th>Estrés pre</th>
+                <th>Estrés post</th>
+                <th>Energía pre</th>
+                <th>Energía post</th>
+                <th>Ánimo pre</th>
+                <th>Ánimo post</th>
+                <th>Duración (min)</th>
+              </tr>
+            </thead>
+            <tbody id="sessions-tbody">
+              <tr>
+                <td colspan="11" style="text-align:center; color: var(--text-muted); padding: 1.5rem;">
+                  Selecciona un participante para ver sus sesiones
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <!-- /participant-detail -->
+
+  </div>
+  <!-- /dash-content -->
+
+  <!-- ════════════════════════════════════════════
+       SCRIPTS
+       ════════════════════════════════════════════ -->
+  <!-- Firebase SDK (compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- App -->
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/dashboard.js"></script>
+
+</body>
+</html>
