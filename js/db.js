@@ -201,9 +201,30 @@ async function processDataBlocks(code, message) {
           const newSessionId = await startSession(code, data.technique);
           localStorage.setItem(`stresslab_session_${code}`, newSessionId);
           currentSessionId = newSessionId;
-          // Notificar al chat sobre el nuevo sessionId
+          // Guardar la técnica actual para usarla en breathing_ready / mindfulness_ready
+          localStorage.setItem(`stresslab_technique_${code}`, data.technique || '');
           window.dispatchEvent(new CustomEvent('session_started', {
             detail: { sessionId: newSessionId, technique: data.technique }
+          }));
+          break;
+
+        case 'breathing_ready':
+          // El participante confirmó que está listo — activar animación de respiración
+          window.dispatchEvent(new CustomEvent('breathing_ready', {
+            detail: {
+              sessionId: currentSessionId,
+              technique: localStorage.getItem(`stresslab_technique_${code}`) || 'respiracion'
+            }
+          }));
+          break;
+
+        case 'mindfulness_ready':
+          // El participante confirmó que está listo — activar guía de voz mindfulness
+          window.dispatchEvent(new CustomEvent('mindfulness_ready', {
+            detail: {
+              sessionId: currentSessionId,
+              technique: 'mindfulness'
+            }
           }));
           break;
 
@@ -214,12 +235,6 @@ async function processDataBlocks(code, message) {
               energy: data.energy,
               mood: data.mood
             });
-            if (data.phase === 'pre') {
-              // Disparar animación de respiración si la técnica es respiracion
-              window.dispatchEvent(new CustomEvent('checkin_pre_done', {
-                detail: { sessionId: currentSessionId }
-              }));
-            }
           }
           break;
 
