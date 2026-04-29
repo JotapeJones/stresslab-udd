@@ -363,37 +363,39 @@ let activeMindfulnessSession = null;
 // el bloque [DATA:{"type":"session_start","technique":"mindfulness"}]
 
 window.addEventListener('mindfulness_ready', (e) => {
+  // IMPORTANTE: este evento viene de handleStartSession() en chat.js,
+  // que es disparado por un clic real del usuario.
+  // El clic del usuario es el gesto requerido por iOS/Safari para
+  // activar SpeechSynthesis — sin él, la voz no suena en móvil.
 
-  // Las voces pueden no estar cargadas aún en algunos navegadores
   const launchSession = () => {
-    // Esperar 4 segundos para que Claude termine de dar instrucciones iniciales
-    setTimeout(() => {
-      activeMindfulnessSession = new MindfulnessSession((completed) => {
-        activeMindfulnessSession = null;
-
-        // Mostrar aviso en el chat para que el participante continúe
-        const hint = document.getElementById('mindfulness-done-hint');
-        if (hint) {
-          hint.style.display = 'block';
-          setTimeout(() => { hint.style.display = 'none'; }, 10000);
-        }
-
-        console.log(completed
-          ? '✅ Sesión de mindfulness completada.'
-          : '⏸ Sesión de mindfulness detenida antes de completar.');
-      });
-
-      activeMindfulnessSession.start();
-    }, 4000);
+    activeMindfulnessSession = new MindfulnessSession((completed) => {
+      activeMindfulnessSession = null;
+      const hint = document.getElementById('mindfulness-done-hint');
+      if (hint) {
+        hint.style.display = 'block';
+        setTimeout(() => { hint.style.display = 'none'; }, 10000);
+      }
+    });
+    activeMindfulnessSession.start();
   };
 
-  // Garantizar que las voces estén disponibles
-  if (window.speechSynthesis.getVoices().length > 0) {
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
     launchSession();
   } else {
+    // Trick para iOS: un speak vacío desbloquea el audio en el mismo gesto
+    const unlock = new SpeechSynthesisUtterance('');
+    unlock.volume = 0;
+    window.speechSynthesis.speak(unlock);
+
     window.speechSynthesis.onvoiceschanged = () => {
       window.speechSynthesis.onvoiceschanged = null;
       launchSession();
     };
+    // Fallback si onvoiceschanged no dispara (algunos Android)
+    setTimeout(() => {
+      if (!activeMindfulnessSession) launchSession();
+    }, 1500);
   }
 });
