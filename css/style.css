@@ -1345,3 +1345,168 @@ tbody tr.selected td { background: rgba(77,184,138,0.06); }
     height: -webkit-fill-available;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   WIDGET DE CHECK-IN (botones 0-10)
+   ═══════════════════════════════════════════════════════════════ */
+
+.checkin-widget {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 1rem;
+  max-width: 420px;
+  box-shadow: var(--shadow-sm);
+}
+
+.checkin-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.checkin-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.checkin-item {
+  margin-bottom: 1rem;
+}
+
+.checkin-label {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.checkin-scale {
+  font-size: 0.73rem;
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+.checkin-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.checkin-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.checkin-btn:hover {
+  border-color: var(--accent);
+  color: var(--primary);
+  background: var(--accent-light);
+}
+
+.checkin-btn.selected {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-color: var(--primary);
+  color: white;
+  transform: scale(1.08);
+}
+
+.checkin-submit {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.checkin-submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.checkin-submit:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WIDGET BOTÓN DE INICIO DE SESIÓN
+   ═══════════════════════════════════════════════════════════════ */
+
+.start-session-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+}
+
+.start-session-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+  box-shadow: 0 4px 14px rgba(26,92,72,0.25);
+  letter-spacing: 0.01em;
+}
+
+.start-session-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26,92,72,0.35);
+}
+
+.start-session-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.start-session-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.start-session-hint {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  padding-left: 0.25rem;
+}
+
+/* Responsive móvil — botones check-in más grandes */
+@media (max-width: 640px) {
+  .checkin-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+    gap: 3px;
+  }
+  .checkin-buttons { gap: 3px; }
+  .checkin-widget { padding: 1rem; }
+}
