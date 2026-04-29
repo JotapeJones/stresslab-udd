@@ -208,6 +208,20 @@ async function processDataBlocks(code, message) {
           }));
           break;
 
+        case 'show_checkin':
+          // Mostrar widget de botones — la app renderiza el check-in interactivo
+          window.dispatchEvent(new CustomEvent('show_checkin', {
+            detail: { phase: data.phase }
+          }));
+          break;
+
+        case 'show_start_button':
+          // Mostrar botón de inicio — la app lo renderiza
+          window.dispatchEvent(new CustomEvent('show_start_button', {
+            detail: { technique: data.technique }
+          }));
+          break;
+
         case 'breathing_ready':
           // El participante confirmó que está listo — activar animación de respiración
           window.dispatchEvent(new CustomEvent('breathing_ready', {
