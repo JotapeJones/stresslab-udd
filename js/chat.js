@@ -79,33 +79,32 @@ Opciones: caminar rápido, trote suave, bicicleta, subir escaleras, baile.
 Protocolo: calentamiento 5 min → actividad principal 20-25 min → vuelta a la calma 5 min.
 
 ══════════════════════════════════════
-FORMATO DE LOS BLOQUES DATA
+BLOQUES DATA — INSTRUCCIONES CRÍTICAS
 ══════════════════════════════════════
-Incluye SOLO el bloque correspondiente al final de tu respuesta, en una línea separada.
+Incluye SOLO el bloque al FINAL de tu respuesta, en una línea separada.
+NUNCA inventes números de check-in — la app muestra botones al participante para que él los ingrese.
 
-Para completar ONBOARDING (cuando el participante confirma todos sus datos):
+Para completar ONBOARDING:
 [DATA:{"type":"onboarding_complete","nickname":"APODO","email":"CORREO","techniques":["respiracion"],"sessionsPerWeek":3,"reminderHour":"18","reminderMinute":"00","interventionWeeks":3}]
-(techniques puede incluir: "respiracion", "mindfulness", "actividad" — los que elija)
+(techniques puede incluir: "respiracion", "mindfulness", "actividad")
 
-Para registrar INICIO DE SESIÓN (úsalo SIEMPRE como primer paso al comenzar sesión):
+Para registrar INICIO DE SESIÓN:
 [DATA:{"type":"session_start","technique":"respiracion"}]
 
-Para ACTIVAR LA ANIMACIÓN DE RESPIRACIÓN (solo para técnica respiracion, úsalo DESPUÉS de que el participante confirme que está listo):
-[DATA:{"type":"breathing_ready"}]
+Para mostrar el CHECK-IN PRE (la app muestra botones 0-10 al participante):
+[DATA:{"type":"show_checkin","phase":"pre"}]
 
-Para ACTIVAR LA MEDITACIÓN DE VOZ (solo para técnica mindfulness, úsalo DESPUÉS de que el participante confirme que está listo):
-[DATA:{"type":"mindfulness_ready"}]
+Para mostrar el CHECK-IN POST (después de la sesión):
+[DATA:{"type":"show_checkin","phase":"post"}]
 
-Para registrar CHECK-IN PRE-sesión (con los 3 valores entre 0-10):
-[DATA:{"type":"checkin","phase":"pre","stress":7,"energy":4,"mood":5}]
-
-Para registrar CHECK-IN POST-sesión:
-[DATA:{"type":"checkin","phase":"post","stress":3,"energy":7,"mood":8}]
+Para mostrar el BOTÓN DE INICIO DE SESIÓN (el participante lo presiona cuando esté listo):
+[DATA:{"type":"show_start_button","technique":"respiracion"}]
+(technique puede ser: "respiracion", "mindfulness" o "actividad")
 
 Para registrar FIN DE SESIÓN exitosa:
 [DATA:{"type":"session_end","completed":true}]
 
-Para registrar sesión NO completada (con motivo):
+Para registrar sesión NO completada:
 [DATA:{"type":"session_end","completed":false,"missedReason":"no pudo"}]
 
 Para registrar CUESTIONARIO DE CIERRE:
@@ -161,29 +160,19 @@ CUANDO EL PARTICIPANTE INICIA CONVERSACIÓN:
 - Si no: pregunta cómo está, ofrece información o apoyo motivacional
 - Puede hacer preguntas sobre las técnicas o el estudio en cualquier momento
 
-FLUJO PARA INICIAR UNA SESIÓN (sigue este orden EXACTO, paso a paso):
-1. Confirma la técnica (si eligió más de una, pregunta cuál hará hoy)
+FLUJO PARA INICIAR UNA SESIÓN (sigue este orden EXACTO):
+1. Confirma la técnica (si eligió más de una, pregunta cuál hará hoy).
 2. Explica brevemente qué va a pasar (duración, formato). Incluye BLOQUE DATA session_start.
-3. CHECK-IN PRE: Pide calificar en escala 0-10 ANTES de empezar:
-   → Nivel de ESTRÉS percibido ahora (0=ninguno, 10=extremo)
-   → Nivel de ENERGÍA (0=agotado, 10=lleno de energía)
-   → ESTADO DE ÁNIMO (0=muy mal, 10=excelente)
-   Recoge los 3 valores en un solo mensaje. Incluye BLOQUE DATA checkin pre.
-   ESPERA A QUE EL PARTICIPANTE RESPONDA EL CHECK-IN ANTES DE CONTINUAR.
-4. CONFIRMACIÓN DE INICIO: Una vez recibido el check-in, pregunta:
-   "¿Estás en un lugar cómodo y listo/a para comenzar? Avísame cuando puedas empezar 🙂"
-   ESPERA SU RESPUESTA.
-5. ACTIVAR LA TÉCNICA solo cuando el participante confirme que está listo:
-   → Para RESPIRACIÓN: incluye BLOQUE DATA breathing_ready. Indica que la animación comenzará en pantalla y que puede cerrar los ojos.
-   → Para MINDFULNESS: incluye BLOQUE DATA mindfulness_ready. Indica que la guía de voz comenzará en segundos y que puede cerrar los ojos.
-   → Para ACTIVIDAD FÍSICA: explica las 3 fases (calentamiento 5 min → actividad 20-25 min → vuelta a la calma 5 min) e indica que empiece. Guía por texto.
-6. CHECK-IN POST: Cuando el participante avise que terminó, pide los mismos 3 ítems. Incluye BLOQUE DATA checkin post.
+3. CHECK-IN PRE: Di algo como "Antes de empezar, necesito registrar cómo estás ahora mismo 👇" e incluye BLOQUE DATA show_checkin phase:pre. La app mostrará automáticamente los botones al participante. ESPERA que el participante complete los botones — te llegará un mensaje automático con sus valores.
+4. BOTÓN DE INICIO: Cuando recibas el check-in, di "¡Perfecto! Cuando estés en un lugar cómodo, presiona el botón para comenzar 🙂" e incluye BLOQUE DATA show_start_button con la técnica. ESPERA que el participante presione el botón — te llegará un mensaje automático confirmando el inicio.
+5. DESPUÉS DEL INICIO CONFIRMADO: Para actividad física guía las 3 fases por texto. Para respiración y mindfulness la app maneja la sesión — di solo "¡Que tengas una buena sesión! Avísame cuando termines 🌿".
+6. CHECK-IN POST: Cuando el participante avise que terminó, di algo como "Genial, ahora registremos cómo quedaste 👇" e incluye BLOQUE DATA show_checkin phase:post. ESPERA los valores.
 7. Incluye BLOQUE DATA session_end completed:true.
-8. Mensaje de cierre: reconoce el esfuerzo, da un dato motivacional sobre el efecto de la técnica.
+8. Mensaje de cierre motivacional con dato científico sobre el efecto de la técnica.
 
-REGLA CRÍTICA: Nunca incluyas breathing_ready ni mindfulness_ready en el mismo mensaje que el check-in pre. Siempre espera la confirmación del participante antes de activar la animación o la voz.
+REGLA CRÍTICA: Nunca escribas números de check-in tú mismo. Siempre usa show_checkin para que el participante los ingrese con botones. El sistema te enviará los valores automáticamente.
 
-El participante puede interrumpir la sesión para hacer preguntas — respóndelas y retoma desde donde se quedó.`;
+El participante puede hacer preguntas en cualquier momento — respóndelas y retoma.`;
   }
 
   if (state === 'closing') {
@@ -244,8 +233,7 @@ async function callClaude(participant, userMessage) {
 }
 
 // ─── Groq (gratis, funciona en Chile, sin tarjeta) ──────────────
-// Usa la API compatible con OpenAI. Modelo: llama-3.3-70b-versatile
-// Límite gratuito: 14.400 requests/día — más que suficiente para el estudio.
+// Reintenta automáticamente hasta 3 veces si hay error transitorio (429/5xx).
 
 async function _callGroq(systemPrompt, history) {
   const messages = [
@@ -260,30 +248,55 @@ async function _callGroq(systemPrompt, history) {
     temperature: 0.75,
   };
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`
-    },
-    body: JSON.stringify(requestBody)
-  });
+  const MAX_RETRIES  = 3;
+  const RETRY_DELAYS = [3000, 6000, 12000]; // ms entre reintentos
 
-  if (response.status === 401) {
-    throw new Error('Clave de Groq incorrecta (401). Verifica GROQ_API_KEY en config.js — debe venir de console.groq.com y empezar con gsk_');
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    let response;
+    try {
+      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+    } catch (networkErr) {
+      // Error de red (sin internet, timeout) — reintentar
+      if (attempt < MAX_RETRIES) {
+        await _sleep(RETRY_DELAYS[attempt]);
+        continue;
+      }
+      throw new Error('Sin conexión a internet. Verifica tu red e intenta nuevamente.');
+    }
+
+    // Error de autenticación — no tiene sentido reintentar
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Clave de Groq incorrecta. Verifica GROQ_API_KEY en config.js (debe empezar con gsk_).');
+    }
+
+    // Rate limit o servidor ocupado — reintentar con espera
+    if (response.status === 429 || response.status >= 500) {
+      if (attempt < MAX_RETRIES) {
+        await _sleep(RETRY_DELAYS[attempt]);
+        continue;
+      }
+      throw new Error('El servicio de IA está temporalmente ocupado. Intenta enviar el mensaje nuevamente.');
+    }
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(`Groq API ${response.status}: ${err.error?.message || 'Error desconocido'}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
   }
+}
 
-  if (response.status === 429) {
-    throw new Error('Límite de requests de Groq alcanzado (429). Espera unos minutos e intenta nuevamente.');
-  }
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(`Groq API ${response.status}: ${err.error?.message || 'Error desconocido'}`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || '';
+function _sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
@@ -418,9 +431,249 @@ async function sendMessage(userText) {
     await appendConversationMessage(participant.code, 'assistant', response);
   } catch (error) {
     setTypingIndicator(false);
-    const errorMsg = 'Hubo un problema de conexión. Por favor, intenta de nuevo en un momento.';
-    appendMessage('assistant', errorMsg, true);
     console.error('Error enviando mensaje:', error);
+
+    // Quitar el último mensaje del usuario del historial para permitir reenvío
+    if (AppState.conversationHistory.length > 0 &&
+        AppState.conversationHistory[AppState.conversationHistory.length - 1].role === 'user') {
+      AppState.conversationHistory.pop();
+    }
+
+    // Mostrar error amigable con botón para reintentar
+    const errWrapper = document.createElement('div');
+    errWrapper.className = 'message-wrapper assistant fade-in';
+    errWrapper.innerHTML = `
+      <div class="message-bubble assistant" style="border-color:#FCA5A5; background:#FEF2F2; color:#DC2626">
+        <p style="margin:0 0 0.5rem">⚠️ No pude conectarme en este momento.</p>
+        <button onclick="resendLastMessage()" style="
+          background:#DC2626; color:white; border:none;
+          border-radius:6px; padding:0.35rem 0.85rem;
+          font-size:0.8rem; cursor:pointer; font-family:inherit
+        ">↩ Reenviar mensaje</button>
+      </div>`;
+    document.getElementById('chat-messages')?.appendChild(errWrapper);
+    scrollToBottom();
+
+    // Restaurar el texto en el input para que el participante pueda reenviarlo
+    const input = document.getElementById('message-input');
+    if (input) input.value = userText;
+
+  } finally {
+    AppState.isLoading = false;
+  }
+}
+
+// Función para el botón "Reenviar mensaje"
+function resendLastMessage() {
+  const input = document.getElementById('message-input');
+  if (!input || !input.value.trim()) return;
+  // Eliminar el mensaje de error de la pantalla
+  const messages = document.getElementById('chat-messages');
+  if (messages?.lastElementChild) messages.lastElementChild.remove();
+  sendMessage();
+}
+
+// ─── Widgets interactivos ────────────────────────────────────────
+
+/**
+ * Muestra el widget de check-in con botones 0-10 para los 3 ítems.
+ * Cuando el participante completa y envía, guarda en Firebase
+ * y manda un mensaje automático a Claude con los valores.
+ */
+function renderCheckinWidget(phase) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+
+  const label = phase === 'pre' ? 'antes de empezar' : 'después de la sesión';
+  const phaseLabel = phase === 'pre' ? 'pre' : 'post';
+
+  const widgetId = `checkin-widget-${phase}-${Date.now()}`;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper assistant fade-in';
+  wrapper.id = widgetId;
+  wrapper.innerHTML = `
+    <div class="checkin-widget">
+      <div class="checkin-title">📊 ¿Cómo estás ${label}?</div>
+      <div class="checkin-subtitle">Toca el número que mejor describe cómo te sientes ahora</div>
+
+      <div class="checkin-item">
+        <div class="checkin-label">😰 Nivel de <strong>estrés</strong> <span class="checkin-scale">(0 = sin estrés · 10 = estrés máximo)</span></div>
+        <div class="checkin-buttons" id="${widgetId}-stress">
+          ${Array.from({length: 11}, (_, i) => `<button class="checkin-btn" onclick="selectCheckin('${widgetId}','stress',${i})">${i}</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="checkin-item">
+        <div class="checkin-label">⚡ Nivel de <strong>energía</strong> <span class="checkin-scale">(0 = agotado/a · 10 = lleno/a de energía)</span></div>
+        <div class="checkin-buttons" id="${widgetId}-energy">
+          ${Array.from({length: 11}, (_, i) => `<button class="checkin-btn" onclick="selectCheckin('${widgetId}','energy',${i})">${i}</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="checkin-item">
+        <div class="checkin-label">🌤 <strong>Estado de ánimo</strong> <span class="checkin-scale">(0 = muy mal · 10 = excelente)</span></div>
+        <div class="checkin-buttons" id="${widgetId}-mood">
+          ${Array.from({length: 11}, (_, i) => `<button class="checkin-btn" onclick="selectCheckin('${widgetId}','mood',${i})">${i}</button>`).join('')}
+        </div>
+      </div>
+
+      <button class="checkin-submit" id="${widgetId}-submit" onclick="submitCheckin('${widgetId}','${phaseLabel}')" disabled>
+        Guardar respuestas →
+      </button>
+    </div>
+  `;
+  container.appendChild(wrapper);
+  scrollToBottom();
+}
+
+// Estado temporal de selección del check-in
+const _checkinSelections = {};
+
+function selectCheckin(widgetId, metric, value) {
+  if (!_checkinSelections[widgetId]) _checkinSelections[widgetId] = {};
+  _checkinSelections[widgetId][metric] = value;
+
+  // Resaltar botón seleccionado
+  const row = document.getElementById(`${widgetId}-${metric}`);
+  if (row) {
+    row.querySelectorAll('.checkin-btn').forEach((btn, i) => {
+      btn.classList.toggle('selected', i === value);
+    });
+  }
+
+  // Habilitar submit si los 3 están seleccionados
+  const sel = _checkinSelections[widgetId];
+  const submitBtn = document.getElementById(`${widgetId}-submit`);
+  if (submitBtn && sel.stress !== undefined && sel.energy !== undefined && sel.mood !== undefined) {
+    submitBtn.disabled = false;
+  }
+}
+
+async function submitCheckin(widgetId, phase) {
+  const sel = _checkinSelections[widgetId];
+  if (!sel || sel.stress === undefined || sel.energy === undefined || sel.mood === undefined) return;
+
+  const participant = AppState.participant;
+  if (!participant) return;
+
+  // Deshabilitar widget para evitar doble envío
+  const widget = document.getElementById(widgetId);
+  if (widget) {
+    widget.querySelectorAll('button').forEach(b => b.disabled = true);
+    const submitBtn = document.getElementById(`${widgetId}-submit`);
+    if (submitBtn) submitBtn.textContent = 'Guardando…';
+  }
+
+  try {
+    // Obtener sessionId activo
+    const sessionId = localStorage.getItem(`stresslab_session_${participant.code}`);
+    if (sessionId) {
+      await saveCheckin(participant.code, sessionId, phase, {
+        stress: sel.stress,
+        energy: sel.energy,
+        mood:   sel.mood
+      });
+    }
+
+    // Marcar widget como completado
+    if (widget) {
+      const submitBtn = document.getElementById(`${widgetId}-submit`);
+      if (submitBtn) submitBtn.textContent = '✅ Registrado';
+    }
+
+    // Enviar valores a Claude como mensaje del participante
+    const phaseLabel = phase === 'pre' ? 'antes de la sesión' : 'después de la sesión';
+    const autoMsg = `[Check-in ${phaseLabel} completado] Estrés: ${sel.stress}/10, Energía: ${sel.energy}/10, Ánimo: ${sel.mood}/10`;
+    await sendAutoMessage(autoMsg);
+
+  } catch (err) {
+    console.error('Error guardando check-in:', err);
+    const submitBtn = document.getElementById(`${widgetId}-submit`);
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Error — intentar de nuevo';
+    }
+  }
+}
+
+/**
+ * Muestra el botón de inicio de sesión.
+ * Al presionarlo, dispara directamente la animación (breathing/mindfulness)
+ * y envía confirmación a Claude.
+ */
+function renderStartButton(technique) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+
+  const labels = {
+    respiracion: '🌬 Iniciar sesión de respiración',
+    mindfulness: '🧘 Iniciar meditación guiada',
+    actividad:   '🏃 Comenzar actividad física',
+  };
+  const label = labels[technique] || '▶ Iniciar sesión';
+  const btnId = `start-btn-${Date.now()}`;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper assistant fade-in';
+  wrapper.innerHTML = `
+    <div class="start-session-widget">
+      <button class="start-session-btn" id="${btnId}"
+        onclick="handleStartSession('${technique}','${btnId}')">
+        ${label}
+      </button>
+      <div class="start-session-hint">Presiona cuando estés en un lugar cómodo</div>
+    </div>
+  `;
+  container.appendChild(wrapper);
+  scrollToBottom();
+}
+
+async function handleStartSession(technique, btnId) {
+  // Deshabilitar botón inmediatamente
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Iniciando…'; }
+
+  // Disparar animación según técnica — el click ES el gesto de usuario requerido por iOS
+  if (technique === 'respiracion') {
+    window.dispatchEvent(new CustomEvent('breathing_ready', {
+      detail: { sessionId: AppState.currentSessionId, technique }
+    }));
+  } else if (technique === 'mindfulness') {
+    window.dispatchEvent(new CustomEvent('mindfulness_ready', {
+      detail: { sessionId: AppState.currentSessionId, technique }
+    }));
+  }
+
+  if (btn) btn.textContent = '✅ ¡Sesión iniciada!';
+
+  // Avisar a Claude que el participante comenzó
+  const techLabels = { respiracion: 'respiración', mindfulness: 'mindfulness', actividad: 'actividad física' };
+  await sendAutoMessage(`[Sesión iniciada] El participante comenzó la sesión de ${techLabels[technique] || technique}.`);
+}
+
+/**
+ * Envía un mensaje automático al chat (sin intervención del participante).
+ * Usado por los widgets para comunicar resultados a Claude.
+ */
+async function sendAutoMessage(text) {
+  const participant = AppState.participant;
+  if (!participant || AppState.isLoading) return;
+
+  AppState.isLoading = true;
+  appendMessage('user', text, false);
+  setTypingIndicator(true);
+  await appendConversationMessage(participant.code, 'user', text);
+
+  try {
+    const response = await callClaude(participant, text);
+    setTypingIndicator(false);
+    appendMessage('assistant', response, true);
+    await appendConversationMessage(participant.code, 'assistant', response);
+  } catch (err) {
+    setTypingIndicator(false);
+    console.error('Error en auto-mensaje:', err);
+    appendMessage('assistant', 'Hubo un problema de conexión. Puedes escribirme directamente para continuar.', true);
   } finally {
     AppState.isLoading = false;
   }
@@ -554,14 +807,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Escuchar eventos de sessión para disparar la animación de respiración
+  // Guardar sessionId cuando inicia una sesión
   window.addEventListener('session_started', (e) => {
     AppState.currentSessionId = e.detail.sessionId;
   });
 
+  // Renderizar widget de check-in cuando Claude lo solicita
+  window.addEventListener('show_checkin', (e) => {
+    renderCheckinWidget(e.detail.phase);
+  });
+
+  // Renderizar botón de inicio cuando Claude lo solicita
+  window.addEventListener('show_start_button', (e) => {
+    renderStartButton(e.detail.technique);
+  });
+
   window.addEventListener('session_ended', () => {
     AppState.currentSessionId = null;
-    // Actualizar sidebar
     if (AppState.participant) {
       getParticipant(AppState.participant.code).then(p => {
         if (p) {
