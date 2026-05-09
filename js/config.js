@@ -60,7 +60,7 @@ const CONFIG = {
     name:               'Estudio Cortisol Salival UDD 2026',
     institution:        'Universidad del Desarrollo, Santiago',
     researchers:        'Florencia Arrieta · Javiera Díaz',
-    guide:              'T.M. Juan Pablo Alcaya',
+    guide:              'T.M. Juan Pablo Alcayaga',
     mentalHealthEmail:  'psicologia@udd.cl',
     mentalHealthPhone:  '600 600 6222 (interno 2500)',
     researcherEmail:    'florencia.arrieta@udd.cl',
